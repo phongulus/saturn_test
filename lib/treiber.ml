@@ -8,5 +8,14 @@ module SimpleTreiber = struct
     if not (Atomic.compare_and_set t cur (v :: cur)) then
       push t v
 
+  let rec pop t =
+    let cur = Atomic.get t in
+    match cur with
+    | [] -> None
+    | x :: tail ->
+      let success = Atomic.compare_and_set t cur tail in
+      if success then Some x
+      else pop t
+
   let pop_all t = Array.of_list (Atomic.exchange t [])
 end

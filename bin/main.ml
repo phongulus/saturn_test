@@ -2,25 +2,46 @@ module T = Domainslib.Task
 open Saturn_test.Timing
 
 (* Select queue for testing*)
-(* module Queue = Saturn.Queue *)
-module Queue = Saturn_test.Treiber.SimpleTreiber
+module Queue = Saturn.Queue
+(* module Queue = Saturn_test.Treiber.SimpleTreiber *)
 
 let domains = Array.init 24 (fun i -> i + 1)
-let q_init = 500_000
-let arr_ops = 2_000_000
+let q_init = 2_00_000
+let push_ops = 2_000_000
+let pop_ops = 2_000_000
+
+type array_op =
+  | Push of int
+  | Pop
+
+(*  *)
+let knuth_shuffle a =
+  let n = Array.length a in
+  let a = Array.copy a in
+  for i = n - 1 downto 1 do
+    let k = Random.int (i+1) in
+    let x = a.(k) in
+    a.(k) <- a.(i);
+    a.(i) <- x
+  done;
+  a
 
 let init () =
   let init_arr = Array.init q_init (fun _ -> Random.full_int max_int) in
-  let arr = Array.init arr_ops (fun _ -> Random.full_int max_int) in
   let q = Queue.create () in
   Array.iter (fun n -> Queue.push q n) init_arr;
-  (arr, q)
+  let arr = Array.init (push_ops + pop_ops) (fun i ->
+    if i < push_ops
+    then Push (Random.full_int max_int)
+    else Pop) in
+  (knuth_shuffle arr, q)
 
 let bench pool (arr, q) =
   T.parallel_for pool ~chunk_size:1 ~start:0 ~finish:(Array.length arr - 1)
-    ~body:(fun i -> Queue.push q arr.(i))
-  (* T.parallel_for pool ~chunk_size:1 ~start:0 ~finish:(Array.length arr - 1)
-    ~body:(fun _ -> ignore @@ Queue.pop q) *)
+    ~body:(fun i ->
+      match arr.(i) with
+      | Push k -> Queue.push q k
+      | Pop -> ignore @@ Queue.pop q)
 
 let () =
   Array.iter (fun num_domains ->
