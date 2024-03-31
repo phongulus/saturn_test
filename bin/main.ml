@@ -6,7 +6,7 @@ module Queue = Saturn.Queue
 (* module Queue = Saturn_test.Treiber.SimpleTreiber *)
 
 let domains = Array.init 24 (fun i -> i + 1)
-let q_init = 2_00_000
+let q_init = 200_000
 let push_ops = 2_000_000
 let pop_ops = 2_000_000
 
@@ -14,7 +14,7 @@ type array_op =
   | Push of int
   | Pop
 
-(*  *)
+(* https://discuss.ocaml.org/t/more-natural-preferred-way-to-shuffle-an-array/217 *)
 let knuth_shuffle a =
   let n = Array.length a in
   let a = Array.copy a in
