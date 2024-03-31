@@ -2,7 +2,7 @@ module T = Domainslib.Task
 open Saturn
 open Saturn_test.Timing
 
-let domains = Array.init 16 (fun i -> i + 1)
+let domains = Array.init 48 (fun i -> i + 1)
 let q_init = 2_000_000
 let arr_ops = 5_000_000
 
