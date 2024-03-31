@@ -5,7 +5,7 @@ open Saturn_test.Timing
 (* module Queue = Saturn.Queue *)
 module Queue = Saturn_test.Treiber.SimpleTreiber
 
-let domains = Array.init 16 (fun i -> i + 1)
+let domains = Array.init 24 (fun i -> i + 1)
 let q_init = 500_000
 let arr_ops = 2_000_000
 
