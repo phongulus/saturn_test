@@ -21,6 +21,7 @@ let bench pool (arr, q) =
 
 let () =
   Array.iter (fun num_domains ->
+    Printf.printf "%d domains: " num_domains;
     let pool = T.setup_pool ~num_domains () in
     T.run pool (fun () -> time ~no_warmup:5 ~no_iter:5 ~init (bench pool));
     T.teardown_pool pool
