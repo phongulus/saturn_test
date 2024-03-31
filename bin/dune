@@ -1,0 +1,4 @@
+(executable
+ (public_name saturn_test)
+ (name main)
+ (libraries saturn_test saturn domainslib))
